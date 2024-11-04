@@ -1,0 +1,14 @@
+diff -ur orig/modules/FrontEnd/IMdkit/FrameMgr.c mod/modules/FrontEnd/IMdkit/FrameMgr.c
+--- orig/modules/FrontEnd/IMdkit/FrameMgr.c	2021-12-04 11:40:01.000000000 +0100
++++ mod/modules/FrontEnd/IMdkit/FrameMgr.c	2024-11-04 15:20:31.043221197 +0100
+@@ -60,6 +60,10 @@
+ 
+ /* Type definition */
+ 
++#ifdef __ANDROID__
++    #define bcopy(src,dest,n) memmove(dest,src,n)
++#endif
++
+ typedef struct _Iter *Iter;
+ 
+ typedef struct _FrameInst *FrameInst;

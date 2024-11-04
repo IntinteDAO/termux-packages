@@ -1,0 +1,41 @@
+From: Helmut Grohne <helmut@subdivi.de>
+Subject: fix cross compilation
+
+We are not interested in whether these .xsl files exist on the host machine,
+but want to know whether they exist on the build machine. Thus AC_CHECK_FILE
+must not be used.
+
+Index: scim-1.4.18/configure.ac
+===================================================================
+--- scim-1.4.18.orig/configure.ac
++++ scim-1.4.18/configure.ac
+@@ -131,20 +131,14 @@
+ AC_SUBST(XSLTPROC)
+ 
+ # Checks if docbook-style-xsl is available
+-AC_CHECK_FILE(
+- [/usr/share/sgml/docbook/xsl-stylesheets/html/tldp-html.xsl],
+- [DOCBOOK_XSL=/usr/share/sgml/docbook/xsl-stylesheets/html/tldp-html.xsl],
+- [AC_CHECK_FILE(
+-  [/usr/share/sgml/docbook/xsl-stylesheets/html/docbook.xsl],
+-  [DOCBOOK_XSL=/usr/share/sgml/docbook/xsl-stylesheets/html/docbook.xsl],
+-   [AC_CHECK_FILE(
+-    [/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl],
+-    [DOCBOOK_XSL=/usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl],
+-    [DOCBOOK_XSL=no]
+-    )]
+-  )]
+-)
+-
++AC_MSG_CHECKING(docbook xsl)
++DOCBOOK_XSL=no
++for f in /usr/share/sgml/docbook/xsl-stylesheets/html/tldp-html.xsl /usr/share/sgml/docbook/xsl-stylesheets/html/docbook.xsl /usr/share/xml/docbook/stylesheet/nwalsh/current/html/docbook.xsl; do
++  test -f "$f" || continue
++  DOCBOOK_XSL=$f
++  break
++done
++AC_MSG_RESULT($DOCBOOK_XSL)
+ AC_SUBST(DOCBOOK_XSL)
+ 
+ AM_CONDITIONAL(HAVE_DOCBOOK, test x$DOCBOOK_XSL != xno)
+
